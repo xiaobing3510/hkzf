@@ -1,6 +1,7 @@
 <template>
-  <div>
-    <router-view></router-view>
+  <div>主页
+
+    <router-link to="/login">登录</router-link>
   </div>
 </template>
 
