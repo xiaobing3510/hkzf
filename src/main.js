@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import { Form, Field, Button, NavBar, Toast } from 'vant'
+import { Form, Field, Button, NavBar, Toast, Tabbar, TabbarItem } from 'vant'
 
+Vue.use(Tabbar)
+Vue.use(TabbarItem)
 Vue.use(Toast)
 Vue.use(NavBar)
 Vue.use(Button)

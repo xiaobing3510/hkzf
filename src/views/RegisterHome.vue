@@ -36,6 +36,7 @@ export default {
   },
   methods: {
     async onSubmit (value) {
+      this.$toast.loading('加载中~')
       const { data } = await register(value)
 
       console.log(data)

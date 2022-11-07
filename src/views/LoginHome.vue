@@ -37,6 +37,7 @@ export default {
   },
   methods: {
     async onSubmit (value) {
+      this.$toast.loading('加载中~')
       const { data } = await login(value)
       console.log(data)
       this.$toast(data.description)
