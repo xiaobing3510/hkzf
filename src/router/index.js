@@ -2,6 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '@/views/LoginHome'
 import Register from '@/views/RegisterHome'
+import Favorate from '@/views/FavorateHome'
+import Rent from '@/views/RentHome'
 import Layout from '@/views/Layout/LayoutHome'
 import LayoutIndex from '@/views/Layout/LayoutIndex'
 import LayoutSearch from '@/views/Layout/LayoutSearch'
@@ -20,11 +22,20 @@ const routes = [
     component: Register
   },
   {
+    path: '/favorate',
+    component: Favorate
+  },
+  {
+    path: '/rent',
+    component: Rent
+  },
+  {
     path: '/',
     component: Layout,
+    redirect: '/index',
     children: [
       {
-        path: '/',
+        path: '/index',
         component: LayoutIndex
       },
       {

@@ -1,5 +1,5 @@
 import axios from 'axios'
-
+import { getToken } from '@/utils/storage'
 const request = axios.create({
   baseURL: 'http://liufusong.top:8080/',
   timeout: 5000
@@ -7,6 +7,7 @@ const request = axios.create({
 
 // 添加请求拦截器
 request.interceptors.request.use(function (config) {
+  config.headers.authorization = getToken()
   return config
 }, function (error) {
   return Promise.reject(error)
