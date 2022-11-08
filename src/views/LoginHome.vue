@@ -1,6 +1,6 @@
 <template>
   <div>
-    <van-nav-bar class="head" title="登录" left-arrow @click-left="onClickLeft" />
+    <van-nav-bar class="head" title="登录" left-arrow @click-left="$router.back()" color='#fff'/>
     <van-form @submit="onSubmit">
       <van-field
         v-model="username"
@@ -37,16 +37,21 @@ export default {
   },
   methods: {
     async onSubmit (value) {
-      this.$toast.loading('加载中~')
-      const { data } = await login(value)
-      console.log(data)
-      this.$toast(data.description)
-      if (data.body) {
-        setToken(data.body.token)
-        this.$router.push('/')
+      try {
+        this.$toast.loading('加载中~')
+        const { data } = await login(value)
+        console.log(data)
+        // 状态码为400直接返回错误提示
+        if (data.status === 400) return this.$toast.fail(data.description)
+        this.$toast.success(data.description)
+        if (data.body) {
+          setToken(data.body.token)
+          this.$router.push('/my')
+        }
+      } catch (error) {
+        this.$toast.fail('请求超时,请稍后重试')
       }
-    },
-    onClickLeft () {}
+    }
   }
 }
 </script>

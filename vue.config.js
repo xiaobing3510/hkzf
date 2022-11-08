@@ -6,8 +6,10 @@ module.exports = defineConfig({
       less: {
         lessOptions: {
           modifyVars: {
-            // 直接覆盖变量
-            blue: '#1cb676'
+            blue: '#1cb676',
+            '@nav-bar-background-color': '#1cb676',
+            '@nav-bar-icon-color': '#fff',
+            '@nav-bar-title-text-color': '#fff'
           }
         }
       }

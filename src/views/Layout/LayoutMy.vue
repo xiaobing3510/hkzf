@@ -36,21 +36,27 @@
 </template>
 
 <script>
-import { info } from '@/api/user'
+import { info, logout } from '@/api/user'
 import { getToken, delToken } from '@/utils/storage'
 export default {
   async created () {
     // 判断是否有token
     if (getToken()) {
-      this.flag = true
-      const res = await info()
-      console.log(res)
-      this.avatar = 'http://liufusong.top:8080' + res.data.body.avatar
-      this.name = res.data.body.nickname
-    } else {
-      this.flag = false
-      this.avatar = 'http://liufusong.top:8080/img/profile/avatar.png'
-      this.name = '游客'
+      try {
+        const { data } = await info()
+
+        // 判断token是否有效
+        if (data.status === 200) {
+          this.flag = true
+          this.avatar = 'http://liufusong.top:8080' + data.body.avatar
+          this.name = data.body.nickname
+        } else {
+          this.$toast.fail('登录信息异常或过期,请重新登录')
+          delToken()
+        }
+      } catch (error) {
+        this.$toast.fail('请求超时')
+      }
     }
   },
   data () {
@@ -71,10 +77,11 @@ export default {
         message: '是否确定退出'
       })
         .then(() => {
-          this.flag = false
+          logout()
           this.avatar = 'http://liufusong.top:8080/img/profile/avatar.png'
           this.name = '游客'
           delToken()
+          this.flag = false
         })
         .catch(() => {
         })
