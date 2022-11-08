@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import { Form, Field, Button, NavBar, Toast, Tabbar, TabbarItem, Grid, GridItem, Dialog } from 'vant'
+import { Form, Field, Button, NavBar, Toast, Tabbar, TabbarItem, Grid, GridItem, Dialog, List, Cell } from 'vant'
 
+Vue.use(Cell)
+Vue.use(List)
 Vue.use(Dialog)
 Vue.use(Grid)
 Vue.use(GridItem)

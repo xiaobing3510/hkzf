@@ -1,6 +1,11 @@
 <template>
   <div>
-    <van-nav-bar class="head" title="注册" left-arrow @click-left="onClickLeft" />
+    <van-nav-bar
+      class="head"
+      title="注册"
+      left-arrow
+      @click-left="onClickLeft"
+    />
     <van-form @submit="onSubmit">
       <van-field
         v-model="username"
@@ -36,9 +41,11 @@ export default {
   },
   methods: {
     async onSubmit (value) {
-      this.$toast.loading('加载中~')
+      this.$toast.loading({
+        message: '注册中...',
+        duration: 0
+      })
       const { data } = await register(value)
-
       console.log(data)
       this.$toast(data.description)
       if (data.status === 200) {
@@ -51,12 +58,12 @@ export default {
 </script>
 
 <style lang='less'>
-.tip{
+.tip {
   display: block;
   width: 100%;
   margin-top: 30px;
   text-align: center;
   font-size: 14px;
-  color:#666;
+  color: #666;
 }
 </style>

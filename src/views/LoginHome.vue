@@ -1,6 +1,6 @@
 <template>
   <div>
-    <van-nav-bar class="head" title="登录" left-arrow @click-left="$router.back()" color='#fff'/>
+    <van-nav-bar class="head" title="登录" left-arrow @click-left="$router.back()" />
     <van-form @submit="onSubmit">
       <van-field
         v-model="username"
@@ -38,7 +38,10 @@ export default {
   methods: {
     async onSubmit (value) {
       try {
-        this.$toast.loading('加载中~')
+        this.$toast.loading({
+          message: '登录中...',
+          duration: 0
+        })
         const { data } = await login(value)
         console.log(data)
         // 状态码为400直接返回错误提示

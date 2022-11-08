@@ -14,3 +14,6 @@ export const info = () => request.get('/user', {
 
 // 登出
 export const logout = () => request.get('/user/logout')
+
+// 查看收藏列表
+export const favorites = () => request.get('/user/favorites')

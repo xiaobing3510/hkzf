@@ -1,54 +1,56 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Login from '@/views/LoginHome'
-import Register from '@/views/RegisterHome'
-import Favorate from '@/views/FavorateHome'
-import Rent from '@/views/RentHome'
-import Layout from '@/views/Layout/LayoutHome'
-import LayoutIndex from '@/views/Layout/LayoutIndex'
-import LayoutSearch from '@/views/Layout/LayoutSearch'
-import LayoutConsult from '@/views/Layout/LayoutConsult'
-import LayoutMy from '@/views/Layout/LayoutMy'
+import { getToken } from '@/utils/storage'
+import { Toast } from 'vant'
 
+Vue.use(Toast)
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/login',
-    component: Login
+    component: () => import('@/views/LoginHome')
   },
   {
     path: '/register',
-    component: Register
+    component: () => import('@/views/RegisterHome')
   },
   {
     path: '/favorate',
-    component: Favorate
+    component: () => import('@/views/FavorateHome')
   },
   {
     path: '/rent',
-    component: Rent
+    component: () => import('@/views/RentHome')
+  },
+  {
+    path: '/detail/:id',
+    component: () => import('@/views/DetailHome')
+  },
+  {
+    path: '/add',
+    component: () => import('@/views/AddHome')
   },
   {
     path: '/',
-    component: Layout,
+    component: () => import('@/views/Layout/LayoutHome'),
     redirect: '/index',
     children: [
       {
         path: '/index',
-        component: LayoutIndex
+        component: () => import('@/views/Layout/LayoutIndex')
       },
       {
         path: '/search',
-        component: LayoutSearch
+        component: () => import('@/views/Layout/LayoutSearch')
       },
       {
-        path: '/comsult',
-        component: LayoutConsult
+        path: '/consult',
+        component: () => import('@/views/Layout/LayoutConsult')
       },
       {
         path: '/my',
-        component: LayoutMy
+        component: () => import('@/views/Layout/LayoutMy')
       }
     ]
   }
@@ -56,6 +58,21 @@ const routes = [
 
 const router = new VueRouter({
   routes
+})
+
+const whiteList = ['/login', '/register', '/', '/my', 'search', '/cosuit']
+router.beforeEach((to, from, next) => {
+  // to去哪里,  from从哪里来,  next是一个函数
+  // 只有调用next, 才会正常放行, next(path)
+  const token = getToken()
+  // 如果有 token 或者要去的页面在白名单, 就直接放行
+  if (token || whiteList.includes(to.path)) {
+    next()
+  } else {
+    // 否则就去登录页面
+    Toast.fail('请先登录')
+    next('/login')
+  }
 })
 
 export default router
