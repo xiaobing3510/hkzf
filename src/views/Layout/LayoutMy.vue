@@ -24,7 +24,7 @@
         <van-grid-item to='/favorate' icon="star-o" text="我的收藏"></van-grid-item>
         <van-grid-item to='/rent' icon="wap-home-o" text="我的出租"></van-grid-item>
         <van-grid-item icon="clock-o" text="看房记录"></van-grid-item>
-        <van-grid-item icon="credit-pay" text="成为房主"></van-grid-item>
+        <van-grid-item to='/add' icon="credit-pay" text="成为房主"></van-grid-item>
         <van-grid-item icon="contact" text="个人资料"></van-grid-item>
         <van-grid-item icon="service-o" text="联系我们"></van-grid-item>
       </van-grid>

@@ -32,6 +32,14 @@ const routes = [
     component: () => import('@/views/AddHome')
   },
   {
+    path: '/city',
+    component: () => import('@/views/CityHome')
+  },
+  {
+    path: '/map',
+    component: () => import('@/views/MapHome')
+  },
+  {
     path: '/',
     component: () => import('@/views/Layout/LayoutHome'),
     redirect: '/index',
@@ -60,7 +68,7 @@ const router = new VueRouter({
   routes
 })
 
-const whiteList = ['/login', '/register', '/', '/my', 'search', '/cosuit']
+const whiteList = ['/login', '/register', '/index', '/my', '/search', '/consult']
 router.beforeEach((to, from, next) => {
   // to去哪里,  from从哪里来,  next是一个函数
   // 只有调用next, 才会正常放行, next(path)

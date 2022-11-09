@@ -17,3 +17,9 @@ export const logout = () => request.get('/user/logout')
 
 // 查看收藏列表
 export const favorites = () => request.get('/user/favorites')
+
+// 发布房源
+export const postHouses = () => request.post('/user/houses')
+
+// 查看已发布房源
+export const getHouses = () => request.get('/user/houses')
