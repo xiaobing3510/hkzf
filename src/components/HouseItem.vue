@@ -54,6 +54,9 @@ export default {
     color: #394043;
     font-size: 15px;
     line-height: 22px;
+    h3{
+      height: 22px;
+    }
     p {
       font-size: 12px;
       color: #afb2b3;

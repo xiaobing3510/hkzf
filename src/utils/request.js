@@ -2,7 +2,7 @@ import axios from 'axios'
 import { getToken } from '@/utils/storage'
 const request = axios.create({
   baseURL: 'http://liufusong.top:8080/',
-  timeout: 5000
+  timeout: 50000
 })
 
 // 添加请求拦截器

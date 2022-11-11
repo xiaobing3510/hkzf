@@ -1,8 +1,17 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import { Form, Field, Button, NavBar, Toast, Tabbar, TabbarItem, Grid, GridItem, Dialog, List, Cell, Swipe, SwipeItem, Search, Icon, IndexBar, IndexAnchor } from 'vant'
+import './common/common.css'
+import './assets/fonts/iconfont/iconfont.css'
+import { Form, Field, Button, NavBar, Toast, Tabbar, TabbarItem, Grid, GridItem, Dialog, List, Cell, Swipe, SwipeItem, Search, Icon, IndexBar, IndexAnchor, Popup, Picker, Uploader, DropdownMenu, DropdownItem, Area } from 'vant'
 
+Vue.use(Area)
+Vue.use(DropdownMenu)
+Vue.use(DropdownItem)
+Vue.use(Uploader)
+Vue.use(Picker)
+Vue.use(Popup)
+Vue.use(Form)
 Vue.use(IndexBar)
 Vue.use(IndexAnchor)
 Vue.use(Icon)

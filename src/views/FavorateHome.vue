@@ -34,7 +34,8 @@ export default {
     try {
       this.$toast.loading({
         message: '加载中...',
-        duration: 0
+        duration: 0,
+        forbidClick: true
       })
       const { data } = await favorites()
       this.$toast.success({

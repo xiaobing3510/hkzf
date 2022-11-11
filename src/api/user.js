@@ -19,7 +19,12 @@ export const logout = () => request.get('/user/logout')
 export const favorites = () => request.get('/user/favorites')
 
 // 发布房源
-export const postHouses = () => request.post('/user/houses')
+export const postHouses = data => request({
+  method: 'POST',
+  url: '/user/houses',
+  headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+  data
+})
 
 // 查看已发布房源
 export const getHouses = () => request.get('/user/houses')

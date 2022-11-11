@@ -15,13 +15,13 @@
       >
         <div v-for="item in indexList" :key="item">
           <van-index-anchor :index="item">{{
-            item == "#" ? "当前城市" : item == "热" ? "热门城市" : item
+            item === "#" ? "当前城市" : item === "热" ? "热门城市" : item
           }}</van-index-anchor>
 
-          <template v-if="item == '#'">
+          <template v-if="item === '#'">
             <van-cell title="上海" />
           </template>
-          <template v-else-if="item == '热'">
+          <template v-else-if="item === '热'">
             <van-cell
               v-for="(item1, index) in hotList"
               :title="item1.label"
@@ -50,6 +50,7 @@ export default {
       indexList: [
         '#',
         '热',
+        'A',
         'B',
         'C',
         'D',
@@ -74,10 +75,20 @@ export default {
     }
   },
   async created () {
-    const res = await city()
-    this.cityList = res.data.body
-    const res1 = await hot()
-    this.hotList = res1.data.body
+    try {
+      this.$toast.loading({
+        message: '加载中...',
+        duration: 0,
+        forbidClick: true
+      })
+      const res = await city(1)
+      this.cityList = res.data.body
+      const res1 = await hot()
+      this.hotList = res1.data.body
+      this.$toast.success('加载成功')
+    } catch (error) {
+      this.$toast.fail('请求超时,请稍后重试')
+    }
   }
 }
 </script>
