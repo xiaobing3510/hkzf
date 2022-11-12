@@ -4,7 +4,12 @@ import router from './router'
 import './common/common.css'
 import './assets/fonts/iconfont/iconfont.css'
 import { Form, Field, Button, NavBar, Toast, Tabbar, TabbarItem, Grid, GridItem, Dialog, List, Cell, Swipe, SwipeItem, Search, Icon, IndexBar, IndexAnchor, Popup, Picker, Uploader, DropdownMenu, DropdownItem, Area } from 'vant'
+import BaiduMap from 'vue-baidu-map'
 
+Vue.use(BaiduMap, {
+  // ak 是在百度地图开发者平台申请的密钥 详见 http://lbsyun.baidu.com/apiconsole/key */
+  ak: 'YG6FWvUCFD9OHxnqDe5swjUo1pLsP25u'
+})
 Vue.use(Area)
 Vue.use(DropdownMenu)
 Vue.use(DropdownItem)

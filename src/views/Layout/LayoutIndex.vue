@@ -16,7 +16,7 @@
           @keyup.enter="console.log('这里还没做')"
         />
       </div>
-      <div class="icon" @click="$router.push('/city')">
+      <div class="icon" @click="$router.push('/map')">
         <van-icon name="location-o" />
       </div>
     </div>
@@ -59,6 +59,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -204,5 +205,6 @@ export default {
       }
     }
   }
+
 }
 </style>

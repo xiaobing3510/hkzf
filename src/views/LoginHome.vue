@@ -40,6 +40,7 @@ export default {
       try {
         this.$toast.loading({
           message: '登录中...',
+          forbidClick: true,
           duration: 0
         })
         const { data } = await login(value)

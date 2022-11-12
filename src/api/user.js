@@ -23,3 +23,12 @@ export const postHouses = data => request.post('/user/houses', data)
 
 // 查看已发布房源
 export const getHouses = () => request.get('/user/houses')
+
+// 查看是否收藏
+export const getFavorites = id => request.get('/user/favorites/' + id)
+
+// 添加收藏
+export const postFavorites = id => request.post('/user/favorites/' + id)
+
+// 删除收藏
+export const delFavorites = id => request.delete('/user/favorites/' + id)

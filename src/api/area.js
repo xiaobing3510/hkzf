@@ -15,3 +15,6 @@ export const getcommunity = data => request.get('./area/community', data)
 
 // 获取子级城市列表
 export const area = id => request.get('./area', { params: { id } })
+
+// 查询区域房源
+export const map = id => request.get('/area/map', { params: { id } })

@@ -43,6 +43,7 @@ export default {
     async onSubmit (value) {
       this.$toast.loading({
         message: '注册中...',
+        forbidClick: true,
         duration: 0
       })
       const { data } = await register(value)

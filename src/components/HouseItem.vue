@@ -4,7 +4,7 @@
       <img :src="'http://liufusong.top:8080' + item.houseImg" alt="" />
     </div>
     <div class="txt">
-      <h3>{{ item.title }}</h3>
+      <h3 class="van-ellipsis">{{ item.title }}</h3>
       <p>{{ item.desc }}</p>
       <div class="label">
         <span v-for="(tag, index) in item.tags" :key="index">{{ tag }}</span>

@@ -9,8 +9,8 @@
     />
     <van-swipe class="my-swipe" :autoplay="3000" indicator-color="#00ae66">
       <van-swipe-item v-for="(itemImg, index) in info.houseImg" :key="index">
-        <img :src="'http://liufusong.top:8080' + itemImg" /> </van-swipe-item
-      >s
+        <img :src="'http://liufusong.top:8080' + itemImg" />
+      </van-swipe-item>
     </van-swipe>
     <div class="info">
       <div class="top">
@@ -43,7 +43,23 @@
       </div>
     </div>
     <div class="oriented">
-      <div class="title">小区:{{ info.community }}</div>
+      <h4>小区:{{ info.community }}</h4>
+      <div class="bdmap">
+        <baidu-map :center="center" :zoom="zoom" @ready="handler">
+          <bm-geolocation
+            anchor="BMAP_ANCHOR_BOTTOM_RIGHT"
+            :showAddressBar="true"
+            :autoLocation="true"
+          ></bm-geolocation>
+          <bm-label
+            v-if="bmLabel.flag"
+            :content="bmLabel.content"
+            :position="bmLabel.position"
+            :labelStyle="{ color: 'red', fontSize: '16px' }"
+            :offset="{width: -35, height: 30}"
+          />
+        </baidu-map>
+      </div>
     </div>
     <div class="collocate">
       <van-cell title="房屋配置" class="title"></van-cell>
@@ -137,10 +153,20 @@
         :item="item"
       />
     </div>
+    <div class="bottom">
+      <button @click="collect">
+        <van-icon name="star-o" v-if="!favorites" />
+        <van-icon name="star" v-else color="#fc5430" />收藏
+      </button>
+
+      <button>在线咨询</button>
+      <button class="green">电话预约</button>
+    </div>
   </div>
 </template>
 
 <script>
+import { getFavorites, delFavorites, postFavorites } from '@/api/user'
 import { housesId, houses } from '@/api/houses'
 import HousesItem from '@/components/HouseItem.vue'
 export default {
@@ -150,15 +176,34 @@ export default {
       info: {},
       oriented: '',
       collocate: [],
-      guessList: []
+      guessList: [],
+      center: { lng: 116.466562, lat: 39.921656 },
+      zoom: 3,
+      bmLabel: {
+        content: '我爱北京天安门',
+        position: {
+          lng: 116.404,
+          lat: 39.915
+        },
+        flag: false
+      },
+      favorites: false
     }
   },
   async created () {
+    this.$toast.loading({
+      message: '加载中...',
+      forbidClick: true,
+      duration: 0
+    })
     const { data } = await housesId(this.$route.params.id)
     this.info = data.body
     this.oriented = this.info.oriented[0]
     this.collocate = this.info.supporting
 
+    const favorites = await getFavorites(this.$route.params.id)
+    console.log(favorites)
+    this.favorites = favorites
     const res = await houses({
       start: 1,
       end: 200
@@ -168,6 +213,48 @@ export default {
       Math.floor(Math.random() * 198),
       3
     )
+    this.$toast.success({
+      message: '加载完成',
+      duration: 1
+    })
+  },
+  methods: {
+    async handler () {
+      const { data } = await housesId(this.$route.params.id)
+      this.bmLabel = {
+        content: data.body.community,
+        position: {
+          lng: this.info.coord.longitude,
+          lat: this.info.coord.latitude
+        },
+        flag: true
+      }
+
+      if (JSON.stringify(data.body.coord) !== '"{}"') {
+        this.center.lng = this.info.coord.longitude
+        this.center.lat = this.info.coord.latitude
+      } else {
+        this.lng = 116.404
+        this.lat = 39.915
+        this.bmLabel.flag = false
+      }
+      this.zoom = 15
+    },
+    async collect () {
+      if (this.favorites) {
+        await delFavorites(this.$route.params.id)
+        this.favorites = false
+        this.$toast.success({
+          message: '取消收藏'
+        })
+      } else {
+        await postFavorites(this.$route.params.id)
+        this.favorites = true
+        this.$toast.success({
+          message: '收藏成功'
+        })
+      }
+    }
   }
 }
 </script>
@@ -179,6 +266,7 @@ export default {
   box-sizing: border-box;
 }
 .body {
+  overflow: hidden;
   margin: 45px 0 100px;
   .my-swipe .van-swipe-item {
     color: #fff;
@@ -255,6 +343,15 @@ export default {
   }
   .oriented {
     padding: 0 15px;
+    h4 {
+      padding: 15px 0;
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 10px;
+      color: #646566;
+    }
+    .bdmap > div {
+      height: 200px;
+    }
   }
   .collocate {
     margin-top: 40px;
@@ -266,7 +363,7 @@ export default {
     padding: 0 15px;
     h4 {
       padding: 15px 0;
-      border-bottom: 1px solid #646566;
+      border-bottom: 1px solid #ccc;
       margin-bottom: 10px;
       color: #646566;
     }
@@ -306,6 +403,23 @@ export default {
     p {
       font-size: 14px;
       color: #333;
+    }
+  }
+  .bottom {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    width: 375px;
+    height: 50px;
+    background-color: #fff;
+    button {
+      flex: 1;
+      background-color: #fff;
+      border: #ccc 1px solid;
+      &.green {
+        background-color: #21b97a;
+        color: #fff;
+      }
     }
   }
 }
