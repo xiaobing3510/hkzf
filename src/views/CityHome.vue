@@ -19,13 +19,14 @@
           }}</van-index-anchor>
 
           <template v-if="item === '#'">
-            <van-cell title="上海" />
+            <van-cell :title="current" />
           </template>
           <template v-else-if="item === '热'">
             <van-cell
               v-for="(item1, index) in hotList"
               :title="item1.label"
               :key="index"
+              @click="onClick(item1)"
             />
           </template>
           <template v-else>
@@ -34,6 +35,7 @@
                 :key="index"
                 v-if="item1.short[0].toUpperCase() === item"
                 :title="item1.label"
+                @click="onClick(item1)"
               /> </template
           ></template>
         </div>
@@ -44,6 +46,7 @@
 
 <script>
 import { city, hot } from '@/api/area'
+import { setCurrentCity, getCurrentCity } from '@/utils/currentCity'
 export default {
   data () {
     return {
@@ -71,10 +74,12 @@ export default {
         'Z'
       ],
       cityList: [],
-      hotList: []
+      hotList: [],
+      current: ''
     }
   },
   async created () {
+    this.current = JSON.parse(getCurrentCity()).label
     try {
       this.$toast.loading({
         message: '加载中...',
@@ -88,6 +93,13 @@ export default {
       this.$toast.success('加载成功')
     } catch (error) {
       this.$toast.fail('请求超时,请稍后重试')
+    }
+  },
+  methods: {
+    onClick (item) {
+      console.log(item)
+      setCurrentCity(JSON.stringify(item))
+      this.$router.back()
     }
   }
 }

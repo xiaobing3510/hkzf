@@ -8,7 +8,7 @@
     <div class="search">
       <div class="input">
         <div class="location" @click="$router.push('/city')">
-          上海<span>▼</span>
+          {{current}}<span>▼</span>
         </div>
         <van-icon name="search" /><input
           type="text"
@@ -63,16 +63,20 @@
 </template>
 
 <script>
+import { getCurrentCity, setCurrentCity } from '@/utils/currentCity'
 import { swipe, groups } from '@/api/home'
 export default {
   data () {
     return {
       imgList: [],
       groups: [],
-      value: ''
+      value: '',
+      current: ''
     }
   },
   async created () {
+    if (!getCurrentCity()) setCurrentCity('{"label":"杭州","value":"AREA|19b39d4f-8a36-d6f8","pinyin":"hangzhou","short":"hz"}')
+    this.current = JSON.parse(getCurrentCity()).label
     const { data } = await swipe()
     this.imgList = data.body
     const {

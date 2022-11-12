@@ -12,3 +12,9 @@ export const image = file => request({
 
 // 查询房屋
 export const houses = params => request.get('/houses', { params })
+
+// 查询具体房屋条件
+export const housesId = id => request.get('/houses/' + id)
+
+// 房屋查询条件
+export const condition = id => request.get('/houses/condition', { params: { id } })

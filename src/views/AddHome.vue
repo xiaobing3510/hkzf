@@ -14,8 +14,9 @@
           name="community"
           is-link
           label="小区名称"
-          :value="community"
+          :value="community.communityName"
           @click="$router.push('/rent/search')"
+          readonly
         ></van-field>
 
         <van-field
@@ -197,7 +198,7 @@
         />
 
         <div class="handle">
-          <van-button @click="cancelTip">取消</van-button>
+          <van-button @click.prevent="cancelTip">取消</van-button>
           <van-button type="info" native-type="submit">提交</van-button>
         </div>
       </van-form>
@@ -208,7 +209,7 @@
 <script>
 import { getTemp, delTemp } from '@/utils/temp'
 import { postHouses } from '@/api/user'
-import { image } from '@/api/houses'
+import { image, condition } from '@/api/houses'
 export default {
   data () {
     return {
@@ -216,13 +217,13 @@ export default {
       price: '',
       area: '',
       door: '请选择',
-      doorList: ['一室', '二室', '三室', '四室', '四室+'],
+      doorType: [],
       doorShow: false,
       floor: '请选择',
-      floorList: ['高楼层', '中楼层', '低楼层'],
+      floorType: [],
       floorShow: false,
       toward: '请选择',
-      towardList: ['东', '南', '西', '北', '东南', '东北', '西南', '西北'],
+      towardType: [],
       towardShow: false,
       title: '',
       tempSlides: [],
@@ -231,21 +232,68 @@ export default {
       description: ''
     }
   },
-  created () {
+  async created () {
     if (getTemp()) {
-      this.community = getTemp()
+      this.community = JSON.parse(getTemp())
       delTemp()
+    }
+    const { data } = await condition('AREA|dbf46d32-7e76-1196')
+    console.log(data)
+    this.floorType = data.body.floor
+    this.doorType = data.body.roomType
+    this.towardType = data.body.oriented
+  },
+  computed: {
+    floorList () {
+      return this.floorType.map(i => i.label)
+    },
+    doorList () {
+      return this.doorType.map(i => i.label)
+    },
+    towardList () {
+      return this.towardType.map(i => i.label)
     }
   },
   methods: {
-    async onSubmit (values) {
-      values.supporting = this.allocation.join('|')
-      values.houseImg = this.houseImg.join('|')
-      values.tempSlides = values.tempSlides.map((i) => ({ url: i.content, file: i.file }))
-      values.floor = `FLOOR|${this.floorList.indexOf(this.floor) + 1}`
-      await postHouses({
-        ...values
+    async onSubmit (value) {
+      this.$toast.loading({
+        message: '加载中...',
+        forbidClick: true,
+        loadingType: 'spinner',
+        duration: 0
       })
+      const res = await postHouses({
+        title: value.title,
+        description: value.description,
+        houseImg: this.houseImg.join('|'),
+        origin: this.towardType[this.towardList.indexOf(value.oriented)].value,
+        supporting: this.allocation.join('|'),
+        price: value.price,
+        roomType: this.doorType[this.doorList.indexOf(value.roomType)].value,
+        size: value.size,
+        floor: this.floorType[this.floorList.indexOf(value.floor)].value,
+        community: this.community.community
+      })
+      if (res.status === 200) {
+        console.log(2)
+        this.$toast.loading({
+          message: '加载中...',
+          duration: 1
+        })
+        console.log(4)
+        this.$dialog.confirm({
+          title: '提示',
+          message: '发布成功',
+          confirmButtonText: '继续发布',
+          cancelButtonText: '去查看'
+        })
+          .then(() => {
+            this.$router.go(0)
+          })
+          .catch(() => {
+            this.$router.push('/list')
+          })
+      }
     },
     async afterRead (file) {
       console.log(file)
@@ -263,7 +311,7 @@ export default {
         })
         .then(() => {})
         .catch(() => {
-          this.$router.back()
+          this.$router.push('/')
         })
     },
     onConfirmDoor (value) {

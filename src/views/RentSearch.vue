@@ -15,6 +15,7 @@
 <script>
 import { getcommunity } from '@/api/area'
 import { setTemp } from '@/utils/temp'
+import { getCurrentCity } from '@/utils/currentCity'
 export default {
   data () {
     return {
@@ -26,14 +27,14 @@ export default {
     async onSearch (name) {
       const { data } = await getcommunity({
         params: {
-          id: 'AREA|a6649a11-be98-b150', // 这里不能写死, 后期得改
+          id: JSON.parse(getCurrentCity()).value,
           name
         }
       })
       this.list = data.body
     },
     onClick (item) {
-      setTemp(item.community)
+      setTemp(JSON.stringify(item))
       this.$router.push('/add')
     }
   }

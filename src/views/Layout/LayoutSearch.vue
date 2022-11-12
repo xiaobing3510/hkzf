@@ -4,7 +4,7 @@
     <div class="search">
       <div class="input">
         <div class="location" @click="$router.push('/city')">
-          上海<span>▼</span>
+          {{current.label}}<span>▼</span>
         </div>
         <van-icon name="search" /><input
           type="text"
@@ -17,11 +17,11 @@
       </div>
     </div>
     <van-dropdown-menu active-color="#1cb676">
-      <van-dropdown-item :title="value1" ref="area">
-        <van-picker :columns="areaList">
+      <van-dropdown-item :title="value1" ref="areaTitle">
+        <van-picker :columns="areaList" ref="area">
           <template slot="columns-bottom">
             <div class="action">
-              <van-button @click="$refs.area.toggle(false)">取消</van-button>
+              <van-button @click="$refs.areaTitle.toggle(false)">取消</van-button>
               <van-button @click="onConfirmArea" type="primary"
                 >确认</van-button
               >
@@ -29,11 +29,11 @@
           </template>
         </van-picker>
       </van-dropdown-item>
-      <van-dropdown-item :title="value2" ref="mode">
-        <van-picker :columns="modeList">
+      <van-dropdown-item :title="value2" ref="modeTitle">
+        <van-picker :columns="modeList" ref="mode">
           <template slot="columns-bottom">
             <div class="action">
-              <van-button @click="$refs.mode.toggle(false)">取消</van-button>
+              <van-button @click="$refs.modeTitle.toggle(false)">取消</van-button>
               <van-button @click="onConfirmMode" type="primary"
                 >确认</van-button
               >
@@ -41,11 +41,11 @@
           </template>
         </van-picker>
       </van-dropdown-item>
-      <van-dropdown-item :title="value3" ref="hire">
-        <van-picker :columns="hireList">
+      <van-dropdown-item :title="value3" ref="hireTitle">
+        <van-picker :columns="hireList" ref="hire">
           <template slot="columns-bottom">
             <div class="action">
-              <van-button @click="$refs.hire.toggle(false)">取消</van-button>
+              <van-button @click="$refs.hireTitle.toggle(false)">取消</van-button>
               <van-button @click="onConfirmHire" type="primary"
                 >确认</van-button
               >
@@ -69,8 +69,8 @@
 </template>
 
 <script>
-import { area } from '@/api/area'
-import { houses } from '@/api/houses'
+import { getCurrentCity } from '@/utils/currentCity'
+import { houses, condition } from '@/api/houses'
 import HouseItem from '@/components/HouseItem.vue'
 export default {
   components: {
@@ -78,6 +78,7 @@ export default {
   },
   data () {
     return {
+
       option: {},
       list: [],
       loading: false,
@@ -88,37 +89,50 @@ export default {
       value3: '租金',
       value4: '筛选',
       areaShow: false,
-      areaList: [],
+      areaType: [],
       modeShow: false,
-      modeList: ['不限', '整租', '合租'],
+      modeType: [],
       hireShow: false,
-      hireList: [
-        '不限',
-        '1000及以下',
-        '1000-2000',
-        '2000-3000',
-        '3000-4000',
-        '4000-5000',
-        '5000-7000',
-        '7000以上'
-      ]
+      hireType: [],
+      current: ''
     }
   },
   async created () {
-    const res = await area('AREA|dbf46d32-7e76-1196')
-    console.log(res.data)
-    this.areaList = res.data.body.map((i) => i.label)
+    this.current = JSON.parse(getCurrentCity())
+    console.log(this.current)
+    const { data } = await condition(this.current.value)
+    console.log(data)
+    this.areaType = data.body.area.children
+    this.modeType = data.body.rentType
+    this.hireType = data.body.price
+  },
+  computed: {
+    areaList () {
+      let str = JSON.stringify(this.areaType).replace(/"label"/g, '"text"')
+      // 租金要求数组深度一致
+      str = str.replace(/"value":"null"/, '"value":"null","children":[{"text":"不限","value":"null"}]')
+      // console.log(str)
+      return JSON.parse(str)
+    },
+    modeList () {
+      return this.modeType.map(i => i.label)
+    },
+    hireList () {
+      return this.hireType.map(i => i.label)
+    }
+
   },
   watch: {
     async option () {
       this.count = 0
+      console.log((this.option))
       const { data } = await houses({
         start: 1 + 20 * this.count,
         end: 20 + 20 * this.count,
         ...this.option
       })
       console.log(data)
-      this.list.push(...data.body.list)
+      this.list = data.body.list
     }
   },
   methods: {
@@ -135,23 +149,25 @@ export default {
       if (!data.body.list.length) this.loading = true
     },
     onConfirmArea () {
-      console.log(this.$refs.area.getColumnValue())
-      this.option = {
-
-      }
-      this.$refs.area.toggle(false)
+      const indexs = this.$refs.area.getIndexes()
+      console.log(indexs)
+      indexs[1] === 0
+        ? this.option.area = this.areaType[indexs[0]].value
+        : this.option.area = this.areaType[indexs[0]].children[indexs[1]].value
+      this.$refs.areaTitle.toggle(false)
+      this.option = { ...this.option } // 为了触发watch
     },
     onConfirmMode () {
-      this.option = {
-
-      }
-      this.$refs.mode.toggle(false)
+      const index = this.$refs.mode.getIndexes()[0]
+      this.option.rentType = this.modeType[index].value
+      this.$refs.modeTitle.toggle(false)
+      this.option = { ...this.option } // 为了触发watch
     },
     onConfirmHire () {
-      this.option = {
-
-      }
-      this.$refs.hire.toggle(false)
+      const index = this.$refs.hire.getIndexes()[0]
+      this.option.price = this.hireType[index].value
+      this.$refs.hireTitle.toggle(false)
+      this.option = { ...this.option } // 为了触发watch
     }
   }
 }
