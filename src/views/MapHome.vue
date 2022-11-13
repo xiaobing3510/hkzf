@@ -53,7 +53,6 @@
                 fontSize: '14px',
                 textAlign: 'center',
                 background: '#fff',
-                width: '100px',
                 background: '#1cb676',
                 padding: '0 5px ',
               }"
@@ -122,11 +121,10 @@ export default {
       })
       this.center.lng = item.coord.longitude
       this.center.lat = item.coord.latitude
-      this.zoom += 2
       this.flag = false
-      if (this.zoom < 16) {
+      if (this.zoom < 14) {
+        this.zoom += 2
         const { data } = await map(item.value)
-        console.log(data)
         this.areaList = data.body
       } else {
         const { data } = await houses({ cityId: item.value })
