@@ -207,6 +207,7 @@
 </template>
 
 <script>
+import { getCurrentCity } from '@/utils/currentCity'
 import { getTemp, delTemp } from '@/utils/temp'
 import { postHouses } from '@/api/user'
 import { image, condition } from '@/api/houses'
@@ -237,7 +238,7 @@ export default {
       this.community = JSON.parse(getTemp())
       delTemp()
     }
-    const { data } = await condition('AREA|dbf46d32-7e76-1196')
+    const { data } = await condition(JSON.parse(getCurrentCity()).value)
     console.log(data)
     this.floorType = data.body.floor
     this.doorType = data.body.roomType
