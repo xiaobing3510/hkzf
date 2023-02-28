@@ -4,7 +4,7 @@
     <div class="search">
       <div class="input">
         <div class="location" @click="$router.push('/city')">
-          {{current.label}}<span>▼</span>
+          {{ current.label }}<span>▼</span>
         </div>
         <van-icon name="search" /><input
           type="text"
@@ -21,7 +21,9 @@
         <van-picker :columns="areaList" ref="area">
           <template slot="columns-bottom">
             <div class="action">
-              <van-button @click="$refs.areaTitle.toggle(false)">取消</van-button>
+              <van-button @click="$refs.areaTitle.toggle(false)"
+                >取消</van-button
+              >
               <van-button @click="onConfirmArea" type="primary"
                 >确认</van-button
               >
@@ -33,7 +35,9 @@
         <van-picker :columns="modeList" ref="mode">
           <template slot="columns-bottom">
             <div class="action">
-              <van-button @click="$refs.modeTitle.toggle(false)">取消</van-button>
+              <van-button @click="$refs.modeTitle.toggle(false)"
+                >取消</van-button
+              >
               <van-button @click="onConfirmMode" type="primary"
                 >确认</van-button
               >
@@ -45,7 +49,9 @@
         <van-picker :columns="hireList" ref="hire">
           <template slot="columns-bottom">
             <div class="action">
-              <van-button @click="$refs.hireTitle.toggle(false)">取消</van-button>
+              <van-button @click="$refs.hireTitle.toggle(false)"
+                >取消</van-button
+              >
               <van-button @click="onConfirmHire" type="primary"
                 >确认</van-button
               >
@@ -78,7 +84,6 @@ export default {
   },
   data () {
     return {
-
       option: {},
       list: [],
       loading: false,
@@ -102,30 +107,39 @@ export default {
     console.log(this.current)
     const { data } = await condition(this.current.value)
     console.log(data)
-    this.areaType = data.body.area.children
+    this.areaType = [data.body.area, data.body.subway]
     this.modeType = data.body.rentType
     this.hireType = data.body.price
   },
   computed: {
     areaList () {
-      let str = JSON.stringify(this.areaType).replace(/"label"/g, '"text"')
-      // 租金要求数组深度一致
-      str = str.replace(/"value":"null"/, '"value":"null","children":[{"text":"不限","value":"null"}]')
-      // console.log(str)
-      return JSON.parse(str)
+      return this.areaType.map((i) =>
+        JSON.parse(
+          JSON.stringify(i)
+            .replace(/"label"/g, '"text"')
+            .replace(
+              /"value":"null"/,
+              '"value":"null","children":[{"text":"不限","value":"null"}]'
+            )
+        )
+      )
     },
     modeList () {
-      return this.modeType.map(i => i.label)
+      return this.modeType.map((i) => i.label)
     },
     hireList () {
-      return this.hireType.map(i => i.label)
+      return this.hireType.map((i) => i.label)
     }
-
   },
   watch: {
     async option () {
+      this.$toast.loading({
+        message: '加载中',
+        forbidClick: true,
+        duration: 0
+      })
       this.count = 0
-      console.log((this.option))
+      console.log(this.option)
       const { data } = await houses({
         start: 1 + 20 * this.count,
         end: 20 + 20 * this.count,
@@ -133,6 +147,10 @@ export default {
       })
       console.log(data)
       this.list = data.body.list
+      this.$toast.success({
+        message: '加载成功',
+        forbidClick: true
+      })
     }
   },
   methods: {
@@ -151,9 +169,10 @@ export default {
     onConfirmArea () {
       const indexs = this.$refs.area.getIndexes()
       console.log(indexs)
-      indexs[1] === 0
-        ? this.option.area = this.areaType[indexs[0]].value
-        : this.option.area = this.areaType[indexs[0]].children[indexs[1]].value
+      indexs[2] === 0
+        ? (this.option.area = this.areaType[indexs[1]].value)
+        : (this.option.area =
+            this.areaType[indexs[1]].children[indexs[2]].value)
       this.$refs.areaTitle.toggle(false)
       this.option = { ...this.option } // 为了触发watch
     },
